@@ -17,7 +17,7 @@ This is a web application for a
 If you want to see a live demo of the project already deployed go [here.](https://alikeness.herokuapp.com/)
 
 ## Motivation
-This is a web development exercise that happened to be the final test of my [Web development course](http://johnguerra.co/classes/webDevelopment_spring_2018/) at [University of the Andes](https://www.uniandes.edu.co). The goal is to make a quick project using node, MongoDB, Meteor, ReactJS and D3.
+This is a web development exercise that happened to be the final project of the [Web development course](http://johnguerra.co/classes/webDevelopment_spring_2018/) at [University of the Andes](https://www.uniandes.edu.co). The goal is to make a useful project using node, MongoDB, Meteor, ReactJS and D3.
 
 ## License
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -32,3 +32,7 @@ First clone or download this repository on your computer, open your terminal go 
 * ```meteor```
 
 Now you only need to open your browser and type on the address bar  ```localhost:3000``` now the project is running locally.
+
+## Authors
+* [__Juan Sebastián Barragán Jerónimo__](https://github.com/jsbarragan796)
+* [__Camilo Zambrano Votto__](https://github.com/cawolfkreo)
