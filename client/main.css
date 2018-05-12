@@ -1,0 +1,15 @@
+/* CSS declarations go here */
+html>body {
+  background-color: #c7b2b2;
+}
+h1, h2, h3 ,h4 ,h5, h6 {
+  font-family: 'Roboto Slab', serif;
+}
+
+p, a {
+  font-family: 'Rubik', sans-serif;
+}
+.contenido{
+  padding-right: 5vw;
+  padding-left: 5vw;
+}
