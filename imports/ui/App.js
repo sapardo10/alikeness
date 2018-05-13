@@ -1,13 +1,16 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+
+import Visualizacion from "./Visualizacion.js";
+
 import { withTracker } from "meteor/react-meteor-data";
 import { Meteor } from "meteor/meteor";
 import { Collection } from "../api/collection.js";
 import { User } from "../api/collection.js";
 import { UserTweets } from "../api/collection.js";
 import { Following } from "../api/collection.js";
-import Visualizacion from "./Visualizacion.js";
-import { Jumbotron,
+import {
+  Jumbotron,
   Container,
   Form,
   FormGroup,
@@ -19,7 +22,7 @@ import { Jumbotron,
 } from "reactstrap";
 
 class App extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
     this.state = {
       queryInput: ""
@@ -28,10 +31,10 @@ class App extends Component {
     this.makeQuery = this.makeQuery.bind(this);
   }
 
-  handleChangeQuery (event) {
-    this.setState({ queryInput: event.target.value });
+  handleChangeQuery({ target: { value } }) {
+    this.setState({ queryInput: value });
   }
-  makeQuery (event) {
+  makeQuery(event) {
     event.preventDefault();
     const query = this.state.queryInput;
     if (query !== "") {
@@ -45,7 +48,7 @@ class App extends Component {
       });
     }
   }
-  searchBar () {
+  searchBar() {
     return (
       <Form className="new-task" onSubmit={this.makeQuery} >
         <FormGroup>
@@ -55,7 +58,7 @@ class App extends Component {
             <Input
               id="query"
               type="text"
-              value = {this.state.queryInput}
+              value={this.state.queryInput}
               onChange={this.handleChangeQuery}
               placeholder="account"
             />
@@ -67,7 +70,7 @@ class App extends Component {
       </Form>);
   }
 
-  render () {
+  render() {
     console.log("render!");
     return (
       <div>
