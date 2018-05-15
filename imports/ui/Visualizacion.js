@@ -12,6 +12,7 @@ export default class Visualizacion extends Component {
 
   componentDidMount () {
     console.log("entrooooo");
+
     const graph = {
       nodes: [
         { name: "hola", age: 35 },
@@ -134,5 +135,5 @@ export default class Visualizacion extends Component {
 
 //Props del Home
 Visualizacion.propTypes = {
-  collection: PropTypes.array.isRequired
+  collection: PropTypes.array
 };

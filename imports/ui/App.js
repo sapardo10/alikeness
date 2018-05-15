@@ -23,19 +23,20 @@ import {
 } from "reactstrap";
 
 class App extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.state = {
-      queryInput: ""
+      queryInput: "",
+      userData: {}
     };
     this.handleChangeQuery = this.handleChangeQuery.bind(this);
     this.makeQuery = this.makeQuery.bind(this);
   }
 
-  handleChangeQuery({ target: { value } }) {
-    this.setState({ queryInput: event.target.value });
+  handleChangeQuery ({ target: { value } }) {
+    this.setState({ queryInput: value });
   }
-  makeQuery(event) {
+  makeQuery (event) {
     event.preventDefault();
     const query = this.state.queryInput;
     if (query !== "") {
@@ -44,12 +45,13 @@ class App extends Component {
         if (error) {
           // handle the error
         } else {
+          this.setState({ userData: result });
           console.log(result);
         }
       });
     }
   }
-  searchBar() {
+  searchBar () {
     return (
       <Form className="new-task" onSubmit={this.makeQuery} >
         <FormGroup>
@@ -71,7 +73,7 @@ class App extends Component {
       </Form>);
   }
 
-  render() {
+  render () {
     console.log("render!");
     return (
       <div>
@@ -85,7 +87,7 @@ class App extends Component {
         <div className="contenido">
           {this.searchBar()}
         </div>
-        <Visualizacion collection={this.props.collection} />
+        <Visualizacion userData={this.state.userData} />
       </div>
     );
   }
