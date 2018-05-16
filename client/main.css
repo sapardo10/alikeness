@@ -20,3 +20,9 @@ p, a {
     align-items:center;
     justify-content:center;
 }
+
+
+
+.axis .domain {
+  display: none;
+}

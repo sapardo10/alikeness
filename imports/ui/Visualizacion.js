@@ -8,123 +8,115 @@ export default class Visualizacion extends Component {
     super(props);
     this.state = {
     };
+    this.margin = { top: 20, right: 50, bottom: 30, left: 40 };
   }
 
   componentDidMount () {
-    console.log("entrooooo");
-
-    const graph = {
-      nodes: [
-        { name: "hola", age: 35 },
-        { name: "hola1", age: 35 },
-        { name: "hola2", age: 33 },
-        { name: "hola3", age: 2 },
-        { name: "hola4", age: 25 },
-        { name: "hola5", age: 85 },
-        { name: "hola6", age: 85 }
-      ],
-      links: [
-        { source: "hola", target: "hola1" },
-        { source: "hola", target: "hola2" },
-        { source: "hola", target: "hola3" },
-        { source: "hola", target: "hola4" },
-        { source: "hola", target: "hola5" },
-        { source: "hola", target: "hola6" }
-      ]
-    };
-    var canvas = d3.select(this.canvas);
-    var width = canvas.attr("width");
-    var height = canvas.attr("height");
-    var ctx = canvas.node().getContext("2d");
-    var r = 10;
-    var color = d3.scaleOrdinal(d3.schemeCategory20);
-    var simulation = d3.forceSimulation()
-      .force("x", d3.forceX(width / 2))
-      .force("y", d3.forceY(height / 2))
-      .force("collide", d3.forceCollide(r + 1))
-      .force("charge", d3.forceManyBody(r + 1).strength(-2000))
-      .on("tick", update)
-      .force("link", d3.forceLink().id((d) => {return d.name;}));
-
-    // graph.nodes.forEach((d) => {
-    //   d.x = Math.random() * width;
-    //   d.y = Math.random() * height;
-    // });
-    simulation.nodes(graph.nodes);
-    simulation.force("link")
-      .links(graph.links);
-
-    canvas.call(d3.drag()
-      .container(canvas.node())
-      .subject(dragsubject)
-      .on("start", dragstarted)
-      .on("drag", dragged)
-      .on("end", dragended));
-
-    function dragsubject () {
-      return simulation.find(d3.event.x, d3.event.y);
-    }
-
-    function update () {
-      ctx.clearRect(0, 0, width, height);
-
-      ctx.beginPath();
-      ctx.globalAlpha = 3;
-      ctx.strokeStyle = "#aaa";
-      graph.links.forEach(drawLink);
-      ctx.stroke();
-
-
-      ctx.globalAlpha = 1;
-      graph.nodes.forEach(drawNode);
-    }
-
-    function drawNode (d) {
-      ctx.beginPath();
-      ctx.fillStyle = color(d.party);
-      ctx.moveTo(d.x, d.y);
-      ctx.arc(d.x, d.y, r, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    function drawLink (d) {
-      ctx.moveTo(d.source.x, d.source.y);
-      ctx.lineTo(d.target.x, d.target.y);
-    }
-
-    function dragstarted () {
-      if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-      d3.event.subject.fx = d3.event.subject.x;
-      d3.event.subject.fy = d3.event.subject.y;
-    }
-
-    function dragged () {
-      d3.event.subject.fx = d3.event.x;
-      d3.event.subject.fy = d3.event.y;
-    }
-
-    function dragended () {
-      if (!d3.event.active) simulation.alphaTarget(0);
-      d3.event.subject.fx = null;
-      d3.event.subject.fy = null;
-    }
-    update();
+    this.vgg();
   }
 
+  componentWillUpdate (newProps) {
+    this.svgUpdate(newProps);
+  }
+
+  vgg () {
+    const svg = d3.select(this.svg);
+    this.height = svg.attr("height") - this.margin.top - this.margin.bottom;
+    this.width = svg.attr("width") - this.margin.left - this.margin.right;
+    this.g = svg.append("g").attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+
+    this.x0 = d3.scaleBand()
+      .rangeRound([0, this.width])
+      .paddingInner(0.1);
+
+    this.x1 = d3.scaleBand()
+      .padding(0.05);
+
+    this.y0 = d3.scaleLinear()
+      .range([this.height, 0]);
+
+    this.g.append("g")
+      .attr("class", "axis-x")
+      .attr("transform", "translate(0," + this.height + ")");
+
+    this.g.append("g")
+      .attr("class", "axis-y");
+
+
+    this.svgUpdate(this.props);
+  }
+
+  svgUpdate (props) {
+    var data = [];
+
+    if (props.userData && props.userData.friends && props.userData.friends.length > 0) {
+      var p = props.userData.personality;
+      data = p.map((d) => {return { name: d.name, value: d.percentile };});
+
+
+      this.x.domain(data.map((d) => { return d.name; }));
+      this.y.domain([0, d3.max(data, (d) => { return d.value; })]);
+
+      const bars = this.g.selectAll(".bar")
+        .data(data);
+
+      bars.enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", (d) => { return this.x(d.name); })
+        .attr("y", (d) => { return this.y(d.value); })
+        .attr("height", (d) => { return this.height - this.y(d.value); })
+        .attr("width", this.x.bandwidth());
+
+
+      const xUpdate = this.g.select(".axis-x");
+
+      xUpdate.transition()
+        .duration(900)
+        .call(d3.axisBottom(this.x));
+
+      xUpdate.exit()
+        .remove();
+
+      const yUpdate = this.g.select(".axis-y");
+
+      yUpdate
+        .call(d3.axisLeft(this.y));
+
+
+      yUpdate.exit()
+        .remove();
+    }
+  }
+
+  getDistance (lat1, lon1, lat2, lon2) {
+    function deg2rad (deg) {
+      return deg * (Math.PI / 180);
+    }
+
+    var R = 6371; // Radius of the earth in km
+    var dLat = deg2rad(lat2 - lat1); // deg2rad below
+    var dLon = deg2rad(lon2 - lon1);
+    var a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2)
+      ;
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c; // Distance in km
+    return d;
+  }
 
   render () {
     return (
       <div className="visualizacion">
         <Row>
-          <Col sm="3" className="centered">
-            {this.props.userData.name}
-          </Col>
-          <Col sm="9" className="centered">
-            <canvas
-              width="800"
-              height="400"
-              ref = {(canvas) => {this.canvas = canvas; return this.canvas; }}>
-      vizualizacion de force
-            </canvas>
+          <Col sm="12" className="centered">
+            <svg
+              width="1200"
+              height="600"
+              ref = {(svg) => {this.svg = svg; return this.svg; }}>
+              vizualizacion distances of  buses
+            </svg>
           </Col>
         </Row>
 
@@ -132,7 +124,6 @@ export default class Visualizacion extends Component {
     );
   }
 }
-
 
 //Props del Home
 Visualizacion.propTypes = {

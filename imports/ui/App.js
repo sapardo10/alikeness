@@ -47,8 +47,8 @@ class App extends Component {
         if (error) {
           // handle the error
         } else {
-          this.setState({ userData: result });
           console.log(result);
+          this.setState({ userData: result });
         }
       });
     }
