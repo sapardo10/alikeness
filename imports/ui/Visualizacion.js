@@ -32,8 +32,11 @@ export default class Visualizacion extends Component {
     this.x1 = d3.scaleBand()
       .padding(0.05);
 
-    this.y0 = d3.scaleLinear()
+    this.y = d3.scaleLinear()
       .range([this.height, 0]);
+
+    this.z = d3.scaleOrdinal()
+      .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
 
     this.g.append("g")
       .attr("class", "axis-x")
@@ -42,49 +45,91 @@ export default class Visualizacion extends Component {
     this.g.append("g")
       .attr("class", "axis-y");
 
+    this.g.append("g")
+      .attr("class", "axis-z");
+
 
     this.svgUpdate(this.props);
   }
 
   svgUpdate (props) {
-    var data = [];
+    let data = [];
 
     if (props.userData && props.userData.friends && props.userData.friends.length > 0) {
-      var p = props.userData.personality;
-      data = p.map((d) => {return { name: d.name, value: d.percentile };});
+      let keys = [props.userData.name];
+      for (let i = 0; i < props.userData.friends.length; i++) {
+        keys.push(props.userData.friends[i].name);
+      }
+      for (let i = 0; i < props.userData.personality.length; i++) {
+        let row = {};
+        row["name"] = props.userData.personality[i].name;
+        row[String(props.userData.name)] = props.userData.personality[i].percentile;
+        for (let j = 0; j < props.userData.friends.length; j++) {
+          row[String(props.userData.friends[j].name)] = props.userData.friends[j].personality[i].percentile;
+          console.log("dd");
+        }
+        console.log("inserting");
+        console.log(row);
+        data.push(row);
+      }
+      console.log("dasdklfjalsd");
+      console.log(data);
 
+      this.x0.domain(data.map((d) => { return d.name; }));
+      this.x1.domain(keys).rangeRound([0, this.x0.bandwidth()]);
+      this.y.domain([0, d3.max(data, (d) => { return d3.max(keys, (key) => { return d[key]; }); })]).nice();
 
-      this.x.domain(data.map((d) => { return d.name; }));
-      this.y.domain([0, d3.max(data, (d) => { return d.value; })]);
-
-      const bars = this.g.selectAll(".bar")
-        .data(data);
-
-      bars.enter().append("rect")
-        .attr("class", "bar")
-        .attr("x", (d) => { return this.x(d.name); })
+      this.g.append("g")
+        .selectAll("g")
+        .data(data)
+        .enter().append("g")
+        .attr("transform", (d) => { return "translate(" + this.x0(d.name) + ",0)"; })
+        .selectAll("rect")
+        .data((d) => { return keys.map((key) => { return { key: key, value: d[key] }; }); })
+        .enter().append("rect")
+        .attr("x", (d) => { return this.x1(d.key); })
         .attr("y", (d) => { return this.y(d.value); })
+        .attr("width", this.x1.bandwidth())
         .attr("height", (d) => { return this.height - this.y(d.value); })
-        .attr("width", this.x.bandwidth());
+        .attr("fill", (d) => { return this.z(d.key); });
 
+      this.g.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(0," + this.height + ")")
+        .call(d3.axisBottom(this.x0));
 
-      const xUpdate = this.g.select(".axis-x");
+      this.g.append("g")
+        .attr("class", "axis")
+        .call(d3.axisLeft(this.y).ticks(null, "s"))
+        .append("text")
+        .attr("x", 2)
+        .attr("y", this.y(this.y.ticks().pop()) + 0.5)
+        .attr("dy", "0.32em")
+        .attr("fill", "#000")
+        .attr("font-weight", "bold")
+        .attr("text-anchor", "start")
+        .text("Porcentaje");
 
-      xUpdate.transition()
-        .duration(900)
-        .call(d3.axisBottom(this.x));
+      var legend = this.g.append("g")
+        .attr("font-family", "sans-serif")
+        .attr("font-size", 10)
+        .attr("text-anchor", "end")
+        .selectAll("g")
+        .data(keys.slice().reverse())
+        .enter().append("g")
+        .attr("transform", (d, i) => { return "translate(0," + i * 20 + ")"; });
 
-      xUpdate.exit()
-        .remove();
+      legend.append("rect")
+        .attr("x", this.width - 19)
+        .attr("width", 19)
+        .attr("height", 19)
+        .attr("fill", this.z);
 
-      const yUpdate = this.g.select(".axis-y");
-
-      yUpdate
-        .call(d3.axisLeft(this.y));
-
-
-      yUpdate.exit()
-        .remove();
+      legend.append("text")
+        .attr("x", this.width - 24)
+        .attr("y", 9.5)
+        .attr("dy", "0.32em")
+        .text((d) => { return d; });
     }
   }
 
