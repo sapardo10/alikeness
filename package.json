@@ -10,9 +10,11 @@
     "d3": "^4.13.0",
     "meteor-node-stubs": "^0.3.2",
     "react": "^16.3.2",
+    "react-d3-basic": "^1.6.11",
     "react-dom": "^16.3.2",
     "reactstrap": "^6.0.1",
-    "twitter": "^1.7.1"
+    "twitter": "^1.7.1",
+    "watson-developer-cloud": "^3.4.1"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.3",

@@ -19,7 +19,9 @@ import {
   Input,
   Label,
   InputGroupAddon,
-  Button
+  Button,
+  Col,
+  Row
 } from "reactstrap";
 
 class App extends Component {
@@ -79,9 +81,15 @@ class App extends Component {
       <div>
         <Jumbotron fluid>
           <Container fluid>
-            <h1 className="display-3">Fluid jumbotron</h1>
-            <p className="lead">This is a modified jumbotron that occupies the
-            entire horizontal space of its parent.</p>
+            <Row>
+              <Col sm="4">
+                <img className="logo" height="300" src="/logo.png" alt="logo alikeness"/>
+              </Col>
+              <Col sm="8">
+                <h1 className="centered">Alikeness</h1>
+                <p> Find out how your twitter personality relates to the people you follow</p>
+              </Col>
+            </Row>
           </Container>
         </Jumbotron>
         <div className="contenido">

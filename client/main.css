@@ -1,6 +1,6 @@
 /* CSS declarations go here */
 html>body {
-  background-color: #c7b2b2;
+  background-color: rgb(200,210,246);
 }
 h1, h2, h3 ,h4 ,h5, h6 {
   font-family: 'Roboto Slab', serif;
@@ -12,4 +12,11 @@ p, a {
 .contenido{
   padding-right: 5vw;
   padding-left: 5vw;
+}
+
+.centered {
+    margin-top: 6%;
+    font-size: 5.5rem;
+    align-items:center;
+    justify-content:center;
 }

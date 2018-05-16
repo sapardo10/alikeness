@@ -20,7 +20,8 @@ export default class Visualizacion extends Component {
         { name: "hola2", age: 33 },
         { name: "hola3", age: 2 },
         { name: "hola4", age: 25 },
-        { name: "hola5", age: 85 }
+        { name: "hola5", age: 85 },
+        { name: "hola6", age: 85 }
       ],
       links: [
         { source: "hola", target: "hola1" },
@@ -28,7 +29,7 @@ export default class Visualizacion extends Component {
         { source: "hola", target: "hola3" },
         { source: "hola", target: "hola4" },
         { source: "hola", target: "hola5" },
-        { source: "hola5", target: "hola2" }
+        { source: "hola", target: "hola6" }
       ]
     };
     var canvas = d3.select(this.canvas);
@@ -39,9 +40,9 @@ export default class Visualizacion extends Component {
     var color = d3.scaleOrdinal(d3.schemeCategory20);
     var simulation = d3.forceSimulation()
       .force("x", d3.forceX(width / 2))
-      .force("y", d3.forceY(width / 2))
+      .force("y", d3.forceY(height / 2))
       .force("collide", d3.forceCollide(r + 1))
-      .force("charge", d3.forceManyBody(r + 1).strength(-200))
+      .force("charge", d3.forceManyBody(r + 1).strength(-2000))
       .on("tick", update)
       .force("link", d3.forceLink().id((d) => {return d.name;}));
 
@@ -115,14 +116,14 @@ export default class Visualizacion extends Component {
       <div className="visualizacion">
         <Row>
           <Col sm="3" className="centered">
-            { }
+            {this.props.userData.name}
           </Col>
           <Col sm="9" className="centered">
             <canvas
-              width="400"
+              width="800"
               height="400"
               ref = {(canvas) => {this.canvas = canvas; return this.canvas; }}>
-              vizualizacion de force
+      vizualizacion de force
             </canvas>
           </Col>
         </Row>
@@ -135,5 +136,5 @@ export default class Visualizacion extends Component {
 
 //Props del Home
 Visualizacion.propTypes = {
-  collection: PropTypes.array
+  userData: PropTypes.object
 };
