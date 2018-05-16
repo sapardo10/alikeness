@@ -38,6 +38,16 @@ if (Meteor.isServer) {
     access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET
   });
 
+  let client2 = new Twitter({
+    consumer_key: process.env.TWITTER_CONSUMER_KEY2,
+    consumer_secret: process.env.TWITTER_CONSUMER_SECRET2,
+    access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY2,
+    access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET2
+  });
+
+  let clientesTwitter = [client, client2];
+  let clientesTwitterUso = [0, 0];
+
   // This method will trigger the streamer
   Meteor.methods({
     "twitter.get.user.data" (userName) {
@@ -45,21 +55,26 @@ if (Meteor.isServer) {
       check(userName !== "", true);
       console.log("Query search User: " + userName);
       // Create the Twitter object
-      let promesaUser = client.get("users/show", { screen_name: userName });
+      let i = Meteor.call("darClienteT");
+      console.log("lsito resp");
+      let promesaUser = clientesTwitter[i].get("users/show", { screen_name: userName });
+
       return promesaUser.then(user => {
         console.log("se encontro");
-        console.log(user);
+        console.log(user.screen_name);
         // TODO:
         let tweets = Meteor.call("get.tweets", user.id_str);
         let friends = Meteor.call("get.friends", user.id_str);
 
         let pFriends = [];
-        for (var i = 0, j = 0; i < friends.length && j < 6; i++) {
+        for (var i = 0, j = 0; i < friends.length && j < 12; i++) {
           if (!friends[i].isP) {
             let tFriend = Meteor.call("get.tweets", friends[i].id);
-            let pFriend = Meteor.call("get.personality", tFriend);
-            pFriends.push({ name: friends[i].name, personality: pFriend });
-            j++;
+            if (tFriend.split(" ").length >= 100) {
+              let pFriend = Meteor.call("get.personality", tFriend);
+              pFriends.push({ name: friends[i].name, personality: pFriend });
+              j++;
+            }
           }
         }
 
@@ -69,32 +84,36 @@ if (Meteor.isServer) {
       }).catch(err => {
         console.log("error");
         console.log(err);
+        throw new Meteor.Error("Error-Getting-user", err.toString());
       });
-
-      // let promesaTweets = client.get("statuses/user_timeline", { user_id: user.id });
-      // let promesaSeguidores = client.get("friends/list", { user_id: user.id });
     },
     "get.tweets" (userId) {
       check(userId, String);
 
       // Create the Twitter object
-      let promesaTweets = client.get("statuses/user_timeline", { user_id: userId });
+      let i = Meteor.call("darClienteT");
+      console.log("lsito resp");
+      let promesaTweets = clientesTwitter[i].get("statuses/user_timeline",
+        { user_id: userId, include_rts: "false", trim_user: "true", count: "200" });
       return promesaTweets.then(tweets => {
-        console.log("se encontro tweets");
         let textos = "";
         for (var i = 0; i < tweets.length; i++) {
-          textos += tweets[i].text;
+          let resp = tweets[i].text.split("https");
+          textos += resp[0];
         }
         return textos;
       }).catch(err => {
         console.log("error");
         console.log(err);
+        throw new Meteor.Error("Error-Getting-tweets", err.toString());
       });
     },
     "get.friends" (userId) {
       check(userId, String);
       // Create the Twitter object
-      let promesaSeguidores = client.get("friends/list", { user_id: userId });
+      let i = Meteor.call("darClienteT");
+      let promesaSeguidores = clientesTwitter[i].get("friends/list",
+        { user_id: userId, count: "200" });
       return promesaSeguidores.then(friends => {
         let idsFriends = friends.users.map((friend, i) => {
           let id = friend.id_str;
@@ -107,6 +126,7 @@ if (Meteor.isServer) {
       }).catch(err => {
         console.log("error");
         console.log(err);
+        throw new Meteor.Error("Error-Getting-friends", err.toString());
       });
     },
     "get.personality" (text) {
@@ -132,6 +152,7 @@ if (Meteor.isServer) {
       }).catch((err) => {
         console.log("error en watson !!!! ");
         console.log(err);
+        throw new Meteor.Error("Error-watson", err.toString());
       });
     },
     "tweets.save.amount" (number) {
@@ -147,6 +168,20 @@ if (Meteor.isServer) {
         insert = numberTweets;
       }
       UserTweets.update(query, insert, { upsert: true });
+    },
+    "darClienteT" () {
+      let min = 9999999999999999;
+      let index = -1;
+      for (let i = 0; i < clientesTwitterUso.length; i++) {
+        if (clientesTwitterUso[i] <= min) {
+          min = clientesTwitterUso[i];
+          index = i;
+        }
+      }
+      console.log("registro uso");
+      clientesTwitterUso[index]++;
+      console.log(clientesTwitterUso);
+      return index;
     }
   }); //Meteor.methods
 }
