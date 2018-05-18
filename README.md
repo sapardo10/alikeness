@@ -6,28 +6,51 @@
 
 
 # Alikeness - Personality relations insights
-
 ## Description
-This is a web application for a
+This is a web application to help others to find insights in the personality relations between twitter's user and the accounts this account follows or  is following. Aiming to this the apps evaluate personality using the method [Big Five personality traits](https://console.bluemix.net/docs/services/personality-insights/models.html#models), service provided by IBM. Also there are a variety of visualizations that help to understand the results.
+
+The wed teclonologies used were:  
 * React.
 * Meteor.
 * Node.
 * MongoDB.
 
-If you want to see a live demo of the project already deployed go [here.](https://alikeness.herokuapp.com/)
+There is a live demo available  [here.](https://alikeness.herokuapp.com/)
 
 ## Motivation
-This is a web development exercise that happened to be the final project of the [Web development course](http://johnguerra.co/classes/webDevelopment_spring_2018/) at [University of the Andes](https://www.uniandes.edu.co). The goal is to make a useful project using node, MongoDB, Meteor, ReactJS and D3.
+This is a web development exercise that happened to be the final project of the [Web development course](http://johnguerra.co/classes/webDevelopment_spring_2018/) at [University of the Andes](https://www.uniandes.edu.co).
 
 ## License
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 This repository has the standard MIT license. You can find it [here.](https://github.com/jsbarragan796/alikeness/blob/master/LICENSE)
 ## Getting Started
-Before you can run this project locally you need ```npm``` and ```Meteor```.
+
+Before you can run this project locally you need to have installed ```npm``` and ```Meteor```.
+
+### Credentials
+* It is needed to have credentials to use the IBM's api [personality insights](https://console.bluemix.net/docs/services/personality-insights/science.html#science)
+* It is needed to have two twitter api credentials in [apps twitter](https://apps.twitter.com)
+#### Environment Variables
+You need to define de following variables, the two credentials of twitter is optional if you define both twitter credentials with the same one.
+
+```
+export TWITTER_CONSUMER_KEY="yourCredentialsHere"
+export TWITTER_CONSUMER_SECRET="yourCredentialsHere"
+export TWITTER_ACCESS_TOKEN_KEY="yourCredentialsHere"
+export TWITTER_ACCESS_TOKEN_SECRET="yourCredentialsHere"
+
+export TWITTER_CONSUMER_KEY2="yourCredentialsHere"
+export TWITTER_CONSUMER_SECRET2="yourCredentialsHere"
+export TWITTER_ACCESS_TOKEN_KEY2="yourCredentialsHere"
+export TWITTER_ACCESS_TOKEN_SECRET2="yourCredentialsHere"
+
+export WATSON_PASSWORD="yourCredentialsHere"
+export WATSON_USERNAME="yourCredentialsHere"
+```
 
 ## Deployment
-First clone or download this repository on your computer, open your terminal go to the directory of the project then run :
+Once you have define the Environment Variables then clone or download this repository on your computer, open your terminal go to the directory of the project then run :
 * ```meteor npm install```or: ```npm install```
 * ```meteor```
 

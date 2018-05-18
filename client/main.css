@@ -21,6 +21,9 @@ p, a {
     justify-content:center;
 }
 
+.jumbotron {
+    background-color: white;
+}
 
 
 .axis .domain {
