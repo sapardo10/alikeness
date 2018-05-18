@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
-import Visualizacion from "./Visualizacion.js";
+import Visualizacion from "./Visualizacion/Visualizacion";
 import UserGraph from "./UserGraph.js";
 
 import { withTracker } from "meteor/react-meteor-data";
@@ -21,11 +21,13 @@ import {
   InputGroupAddon,
   Button,
   Col,
-  Row
+  Row,
+  Card,
+  CardBody
 } from "reactstrap";
 
 class App extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
     this.state = {
       account: "",
@@ -43,22 +45,22 @@ class App extends Component {
     this.handleChangeNumberAccunts = this.handleChangeNumberAccunts.bind(this);
   }
 
-  handleChangeQuery ({ target: { value } }) {
+  handleChangeQuery({ target: { value } }) {
     this.setState({ account: value });
   }
 
-  handleChangeLenguage ({ target: { value } }) {
+  handleChangeLenguage({ target: { value } }) {
     this.setState({ lenguage: value });
   }
 
-  handleChangeNumberAccunts ({ target: { value } }) {
+  handleChangeNumberAccunts({ target: { value } }) {
     this.setState({ numberAccunts: value });
   }
-  handleChangeTypeCompare ({ target: { value } }) {
+  handleChangeTypeCompare({ target: { value } }) {
     this.setState({ typeCompare: value });
   }
 
-  makeQueryCompare (event) {
+  makeQueryCompare(event) {
     event.preventDefault();
     console.log("intento compare");
     const typeCompare = this.state.typeCompare;
@@ -78,7 +80,8 @@ class App extends Component {
       });
     }
   }
-  makeQuery (event) {
+
+  makeQuery(event) {
     event.preventDefault();
     console.log("intento");
     const account = this.state.account;
@@ -95,7 +98,8 @@ class App extends Component {
       });
     }
   }
-  searchBar () {
+
+  searchBar() {
     if (this.state.userData) {
       return (
         <div>
@@ -166,12 +170,12 @@ class App extends Component {
     }
   }
 
-  render () {
+  render() {
     console.log("render!");
 
     let graph = "";
     if (this.state.userCompare) {
-      graph = (<Visualizacion userData={this.state.userData} userCompare={this.state.userCompare}/>);
+      graph = (<Visualizacion userData={this.state.userData} userCompare={this.state.userCompare} />);
     } else {
       graph = <UserGraph userData={this.state.userData} />;
     }
@@ -181,7 +185,7 @@ class App extends Component {
           <Container fluid>
             <Row>
               <Col sm="4">
-                <img className="logo" height="300" src="/logo.png" alt="logo alikeness"/>
+                <img className="logo" height="300" src="/logo.png" alt="logo alikeness" />
               </Col>
               <Col sm="8">
                 <h1 className="centered">Alikeness</h1>
@@ -192,10 +196,14 @@ class App extends Component {
         </Jumbotron>
         <Row>
           <Col md="4">
-            { }
+            {}
           </Col>
           <Col md="3">
-            {this.searchBar()}
+            <Card>
+              <CardBody>
+                {this.searchBar()}
+              </CardBody>
+            </Card>
           </Col>
         </Row>
         {graph}
@@ -203,6 +211,8 @@ class App extends Component {
     );
   }
 }
+
+
 //prop types for App
 App.propTypes = {
   user: PropTypes.array.isRequired,
@@ -210,6 +220,8 @@ App.propTypes = {
   tweets: PropTypes.array.isRequired,
   following: PropTypes.array.isRequired
 };
+
+
 export default withTracker(() => {
   Meteor.subscribe("collection");
   Meteor.subscribe("user");
