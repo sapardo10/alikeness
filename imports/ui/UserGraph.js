@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import * as d3 from "d3";
 import { Row, Col } from "reactstrap";
 
-export default class Visualizacion extends Component {
+export default class UserGraph extends Component {
   constructor (props) {
     super(props);
     this.state = {
@@ -36,7 +36,7 @@ export default class Visualizacion extends Component {
       .range([this.height, 0]);
 
     this.z = d3.scaleOrdinal()
-      .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+      .range(["#ff8c00", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
 
     this.g.append("g")
       .attr("class", "axis-x")
@@ -55,22 +55,17 @@ export default class Visualizacion extends Component {
   svgUpdate (props) {
     let data = [];
 
-    if (props.userCompare && props.userData && props.userCompare.compare.length > 0) {
+    if (props.userData && props.userData.personality && props.userData.name) {
       let keys = [props.userData.name];
-      for (let i = 0; i < props.userCompare.compare.length; i++) {
-        keys.push(props.userCompare.compare[i].name);
-      }
+
       for (let i = 0; i < props.userData.personality.length; i++) {
         let row = {};
         row["name"] = props.userData.personality[i].name;
         row[String(props.userData.name)] = props.userData.personality[i].percentile;
-        for (let j = 0; j < props.userCompare.compare.length; j++) {
-          row[String(props.userCompare.compare[j].name)] = props.userCompare.compare[j].personality[i].percentile;
-        }
         data.push(row);
       }
-
       console.log(data);
+      console.log(keys);
 
       this.x0.domain(data.map((d) => { return d.name; }));
       this.x1.domain(keys).rangeRound([0, this.x0.bandwidth()]);
@@ -97,7 +92,7 @@ export default class Visualizacion extends Component {
 
       this.g.append("g")
         .attr("class", "axis")
-        .call(d3.axisLeft(this.y).ticks(null, "s"))
+        .call(d3.axisLeft(this.y).ticks(null).tickFormat(d3.format(".0%")))
         .append("text")
         .attr("x", 2)
         .attr("y", this.y(this.y.ticks().pop()) + 0.5)
@@ -154,8 +149,8 @@ export default class Visualizacion extends Component {
         <Row>
           <Col sm="12" className="centered">
             <svg
-              width="1200"
-              height="600"
+              width="600"
+              height="300"
               ref = {(svg) => {this.svg = svg; return this.svg; }} />
           </Col>
         </Row>
@@ -166,7 +161,6 @@ export default class Visualizacion extends Component {
 }
 
 //Props del Home
-Visualizacion.propTypes = {
-  userData: PropTypes.object,
-  userCompare: PropTypes.object
+UserGraph.propTypes = {
+  userData: PropTypes.object
 };

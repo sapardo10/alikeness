@@ -50,6 +50,65 @@ if (Meteor.isServer) {
 
   // This method will trigger the streamer
   Meteor.methods({
+    "get.twitter.account" (userName, lenguage) {
+      check(userName, String);
+      check(userName !== "", true);
+      check(lenguage, String);
+      check(lenguage !== "", true);
+      check(lenguage === "es" || lenguage === "en", true);
+      console.log("Get twitter account " + userName);
+      // Create the Twitter object
+      let i = Meteor.call("darClienteT");
+      console.log("lsito resp");
+      let promesaUser = clientesTwitter[i].get("users/show", { screen_name: userName });
+
+      return promesaUser.then(user => {
+        console.log("Getted twitter account " + user.screen_name);
+        let tweets = Meteor.call("get.tweets", user.id_str);
+        let userP = Meteor.call("get.personality", tweets, lenguage);
+
+        return { name: user.screen_name, personality: userP, followers_count: user.followers_count,
+          following_count: user.friends_count, image: user.profile_image_url_https.replace("_normal", ""),
+          idStr: user.id_str };
+      }).catch(err => {
+        console.log("error");
+        console.log(err);
+        throw new Meteor.Error("Error-Getting-user", err.toString());
+      });
+    },
+    "twitter.get.user.data2" (typeCompare, numberAccunts, idStr, lenguage) {
+      check(typeCompare, String);
+      check(typeCompare === "following" || typeCompare === "followers", true);
+      check(typeCompare !== "", true);
+      check(numberAccunts, Number);
+      check(numberAccunts <= 20, true);
+      check(idStr, String);
+      check(idStr !== "", true);
+
+      console.log("Get data " + idStr);
+      let compare;
+
+      if (typeCompare === "following") {
+        compare = Meteor.call("get.friends", idStr);
+      }
+      if (typeCompare === "followers") {
+        compare = Meteor.call("get.followers", idStr);
+      }
+      console.log("Got Compare ");
+      let pCompate = [];
+      for (var i = 0, j = 0; i < compare.length && j < numberAccunts; i++) {
+        if (!compare[i].isP) {
+          let tFriend = Meteor.call("get.tweets", compare[i].id);
+          if (tFriend.split(" ").length >= 100) {
+            let pFriend = Meteor.call("get.personality", tFriend, lenguage);
+            pCompate.push({ name: compare[i].name, personality: pFriend });
+            j++;
+          }
+        }
+      }
+      console.log("Retromno");
+      return { compare: pCompate };
+    },
     "twitter.get.user.data" (userName) {
       check(userName, String);
       check(userName !== "", true);
@@ -129,17 +188,40 @@ if (Meteor.isServer) {
         throw new Meteor.Error("Error-Getting-friends", err.toString());
       });
     },
-    "get.personality" (text) {
+    "get.followers" (userId) {
+      check(userId, String);
+      // Create the Twitter object
+      let i = Meteor.call("darClienteT");
+      let promesaSeguidores = clientesTwitter[i].get("followers/list",
+        { user_id: userId, count: "200" });
+      return promesaSeguidores.then(friends => {
+        let idsFriends = friends.users.map((friend, i) => {
+          let id = friend.id_str;
+          let name = friend.name;
+          let isP = friend.protected;
+          return { id, name, isP };
+        });
+        console.log("se encontro followers");
+        return idsFriends;
+      }).catch(err => {
+        console.log("error");
+        console.log(err);
+        throw new Meteor.Error("Error-Getting-Followers", err.toString());
+      });
+    },
+    "get.personality" (text, lenguage) {
       check(text, String);
       check(text !== "", true);
+      check(lenguage, String);
+      check(lenguage !== "", true);
+      check(lenguage === "es" || lenguage === "en", true);
 
       let profileParams = {
         // Get the content from the JSON file.
         content: text,
         content_type: "text/html;charset=utf-8",
         consumption_preferences: false,
-        content_language: "es"
-
+        content_language: lenguage
       };
       let personality = new Promise((resolve, reject) => {
         watsonClient.profile(profileParams, (err, { personality }) => {
