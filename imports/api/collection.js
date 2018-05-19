@@ -101,50 +101,13 @@ if (Meteor.isServer) {
           let tFriend = Meteor.call("get.tweets", compare[i].id);
           if (tFriend.split(" ").length >= 100) {
             let pFriend = Meteor.call("get.personality", tFriend, lenguage);
-            pCompate.push({ name: compare[i].name, personality: pFriend });
+            pCompate.push({ name: compare[i].screenName, personality: pFriend });
             j++;
           }
         }
       }
       console.log("Retromno");
       return { compare: pCompate };
-    },
-    "twitter.get.user.data" (userName) {
-      check(userName, String);
-      check(userName !== "", true);
-      console.log("Query search User: " + userName);
-      // Create the Twitter object
-      let i = Meteor.call("darClienteT");
-      console.log("lsito resp");
-      let promesaUser = clientesTwitter[i].get("users/show", { screen_name: userName });
-
-      return promesaUser.then(user => {
-        console.log("se encontro");
-        console.log(user.screen_name);
-        // TODO:
-        let tweets = Meteor.call("get.tweets", user.id_str);
-        let friends = Meteor.call("get.friends", user.id_str);
-
-        let pFriends = [];
-        for (var i = 0, j = 0; i < friends.length && j < 12; i++) {
-          if (!friends[i].isP) {
-            let tFriend = Meteor.call("get.tweets", friends[i].id);
-            if (tFriend.split(" ").length >= 100) {
-              let pFriend = Meteor.call("get.personality", tFriend);
-              pFriends.push({ name: friends[i].name, personality: pFriend });
-              j++;
-            }
-          }
-        }
-
-        let userP = Meteor.call("get.personality", tweets);
-        return { name: user.name, image: user.profile_image_url_https.replace("_normal", ""), personality: userP,
-          friends: pFriends };
-      }).catch(err => {
-        console.log("error");
-        console.log(err);
-        throw new Meteor.Error("Error-Getting-user", err.toString());
-      });
     },
     "get.tweets" (userId) {
       check(userId, String);
@@ -178,7 +141,8 @@ if (Meteor.isServer) {
           let id = friend.id_str;
           let name = friend.name;
           let isP = friend.protected;
-          return { id, name, isP };
+          let screenName = friend.screen_name;
+          return { id, name, isP, screenName };
         });
         console.log("se encontro friends");
         return idsFriends;
@@ -198,8 +162,9 @@ if (Meteor.isServer) {
         let idsFriends = friends.users.map((friend, i) => {
           let id = friend.id_str;
           let name = friend.name;
+          let screenName = friend.screen_name;
           let isP = friend.protected;
-          return { id, name, isP };
+          return { id, name, isP, screenName };
         });
         console.log("se encontro followers");
         return idsFriends;

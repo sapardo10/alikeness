@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 
 import Visualizacion from "./Visualizacion/Visualizacion";
-import UserGraph from "./UserGraph.js";
+import Info from "./Info";
 
 import { withTracker } from "meteor/react-meteor-data";
 import { Meteor } from "meteor/meteor";
@@ -23,19 +23,30 @@ import {
   Col,
   Row,
   Card,
-  CardBody
+  CardBody,
+  Navbar,
+  NavbarBrand,
+  Nav,
+  NavItem,
+  NavLink,
+  NavbarToggler,
+  Collapse,
+  Modal, ModalHeader, ModalBody
 } from "reactstrap";
 
 class App extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.state = {
       account: "",
       lenguage: "",
       userData: null,
       typeCompare: "",
-      numberAccunts: null,
-      userCompare: null
+      numberAccunts: "",
+      userCompare: null,
+      isOpen: false,
+      modal: false,
+      info: true
     };
     this.handleChangeQuery = this.handleChangeQuery.bind(this);
     this.handleChangeLenguage = this.handleChangeLenguage.bind(this);
@@ -43,25 +54,64 @@ class App extends Component {
     this.makeQueryCompare = this.makeQueryCompare.bind(this);
     this.handleChangeTypeCompare = this.handleChangeTypeCompare.bind(this);
     this.handleChangeNumberAccunts = this.handleChangeNumberAccunts.bind(this);
+    this.restart = this.restart.bind(this);
+    this.toggle = this.toggle.bind(this);
+    this.toggleModal = this.toggleModal.bind(this);
+    this.renderApp = this.renderApp.bind(this);
+    this.info = this.info.bind(this);
+    this.app = this.app.bind(this);
   }
 
-  handleChangeQuery({ target: { value } }) {
+  info () {
+    this.setState({
+      info: true
+    });
+  }
+  app () {
+    this.setState({
+      info: false
+    });
+  }
+  toggle () {
+    this.setState({
+      isOpen: !this.state.isOpen
+    });
+  }
+
+  toggleModal () {
+    this.setState({
+      modal: !this.state.modal
+    });
+  }
+
+  handleChangeQuery ({ target: { value } }) {
     this.setState({ account: value });
   }
 
-  handleChangeLenguage({ target: { value } }) {
+  handleChangeLenguage ({ target: { value } }) {
     this.setState({ lenguage: value });
   }
 
-  handleChangeNumberAccunts({ target: { value } }) {
+  handleChangeNumberAccunts ({ target: { value } }) {
     this.setState({ numberAccunts: value });
   }
-  handleChangeTypeCompare({ target: { value } }) {
+  handleChangeTypeCompare ({ target: { value } }) {
     this.setState({ typeCompare: value });
   }
 
-  makeQueryCompare(event) {
+  restart () {
+    this.setState({
+      account: "",
+      lenguage: "",
+      userData: null,
+      typeCompare: "",
+      numberAccunts: "",
+      userCompare: null });
+  }
+
+  makeQueryCompare (event) {
     event.preventDefault();
+    this.toggleModal();
     console.log("intento compare");
     const typeCompare = this.state.typeCompare;
     const numberAccunts = Number(this.state.numberAccunts);
@@ -74,6 +124,7 @@ class App extends Component {
         if (error) {
           console.log(error.toString());
         } else {
+          this.toggleModal();
           this.setState({ userCompare: result });
           console.log(result);
         }
@@ -81,8 +132,9 @@ class App extends Component {
     }
   }
 
-  makeQuery(event) {
+  makeQuery (event) {
     event.preventDefault();
+    this.toggleModal();
     console.log("intento");
     const account = this.state.account;
     const lenguage = this.state.lenguage;
@@ -92,6 +144,7 @@ class App extends Component {
         if (error) {
           console.log(error.toString());
         } else {
+          this.toggleModal();
           this.setState({ userData: result });
           console.log(result);
         }
@@ -99,12 +152,23 @@ class App extends Component {
     }
   }
 
-  searchBar() {
+  searchBar () {
     if (this.state.userData) {
       return (
         <div>
-          <p>The user has {this.state.userData.followers_count} followers </p>
-          <p>The user is following {this.state.userData.following_count} accounts </p>
+          <Row>
+            <Col sm="3">
+              <img className="rounded"
+                height="100"
+                src={this.state.userData.image}
+                alt={"picture of " + this.state.userData.name} />
+            </Col>
+            <Col sm="9" className="justificado">
+              <p>The user has {this.state.userData.followers_count} followers </p>
+              <p>The user is following {this.state.userData.following_count} accounts </p>
+            </Col>
+          </Row>
+          <hr/>
           <Form className="new-task" onSubmit={this.makeQueryCompare} >
             <FormGroup>
               <Label for="numberAccunts">Now many accounts you whan to compare  ?</Label>
@@ -114,7 +178,7 @@ class App extends Component {
                 id="numberAccunts"
                 value={this.state.numberAccunts}
                 onChange={this.handleChangeNumberAccunts}>
-                <option />
+                <option>{""}</option>
                 <option>5</option>
                 <option>10</option>
                 <option>20</option>
@@ -128,12 +192,14 @@ class App extends Component {
                 id="typeCompare"
                 value={this.state.typeCompare}
                 onChange={this.handleChangeTypeCompare}>
-                <option />
+                <option>{""}</option>
                 <option>following</option>
                 <option>followers</option>
               </Input>
             </FormGroup>
-            <Button color="secondary">Send</Button>
+            <Button color="primary">Send</Button>
+            {" "}
+            <Button color="secondary" onClick={this.restart}>Restart</Button>
           </Form>
         </div>);
     } else {
@@ -165,22 +231,69 @@ class App extends Component {
               <option>en</option>
             </Input>
           </FormGroup>
-          <Button color="secondary">Send</Button>
+          <Button color="primary">Send</Button>
         </Form>);
     }
   }
 
-  render() {
-    console.log("render!");
-
+  renderApp () {
     let graph = "";
-    if (this.state.userCompare) {
+    if (this.state.userData) {
       graph = (<Visualizacion userData={this.state.userData} userCompare={this.state.userCompare} />);
+    }
+    return (<div>
+      <Row>
+        <Col className="centro" sm="5">
+          <Card className="centro">
+            <CardBody>
+              {this.searchBar()}
+            </CardBody>
+          </Card>
+        </Col>
+      </Row>
+      <br/>
+      <hr/>
+      {graph}
+      <Modal isOpen={this.state.modal}>
+        <ModalHeader >Modal title</ModalHeader>
+        <ModalBody>
+        Wait a moment we are fetching data ...
+        </ModalBody>
+      </Modal>
+    </div>);
+  }
+
+  render () {
+    let view = "";
+    if (!this.state.info) {
+      view = this.renderApp();
     } else {
-      graph = <UserGraph userData={this.state.userData} />;
+      view = <Info/>;
     }
     return (
       <div>
+        <Navbar color="faded" light expand="md">
+          <NavbarBrand role="listitem">
+            <img src="/logo.png" height="50" alt="Logo alikeness"/>
+          </NavbarBrand>
+          <NavbarToggler onClick={this.toggle} />
+          <Collapse isOpen={this.state.isOpen} navbar>
+            <Nav className="ml-auto" navbar>
+
+              <NavItem onClick={this.info}>
+                <NavLink >
+                  { "Information" }
+                </NavLink>
+              </NavItem>
+              <NavItem onClick={this.app}>
+                <NavLink >
+                  { "Analyze personality" }
+                </NavLink>
+              </NavItem>
+
+            </Nav>
+          </Collapse>
+        </Navbar>
         <Jumbotron fluid>
           <Container fluid>
             <Row>
@@ -194,19 +307,7 @@ class App extends Component {
             </Row>
           </Container>
         </Jumbotron>
-        <Row>
-          <Col md="4">
-            {}
-          </Col>
-          <Col md="3">
-            <Card>
-              <CardBody>
-                {this.searchBar()}
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-        {graph}
+        {view}
       </div>
     );
   }

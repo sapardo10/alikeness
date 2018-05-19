@@ -29,3 +29,43 @@ p, a {
 .axis .domain {
   display: none;
 }
+
+.grafica{
+margin-top: 1vw;
+margin-bottom: 1vw;
+}
+
+.centro {
+    margin: 0 auto;
+    text-align: center;
+}
+.justificado{
+  text-align: justify;
+}
+
+nav {
+  background-color: #8599ea;
+}
+
+.jumbotron{
+  background-color: white;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #798fe6;
+    border-color: #798fe6;
+}
+
+
+.input-group>.input-group-append:last-child>.btn:not(:last-child):not(.dropdown-toggle), .input-group>.input-group-append:last-child>.input-group-text:not(:last-child), .input-group>.input-group-append:not(:last-child)>.btn, .input-group>.input-group-append:not(:last-child)>.input-group-text, .input-group>.input-group-prepend>.btn, .input-group>.input-group-prepend>.input-group-text {
+  color: white;
+  background-color: #798fe6;
+}
+.nav-item{
+  cursor: pointer;
+}
+.navbar-light .navbar-nav .nav-link:focus, .navbar-light .navbar-nav .nav-link:hover {
+    color: white;
+    background-color: #001e96;
+}
