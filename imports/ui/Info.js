@@ -6,7 +6,7 @@ import {
 
 
 export default class Info extends Component {
-  render() {
+  render () {
     return (
       <Card>
         <CardBody>
