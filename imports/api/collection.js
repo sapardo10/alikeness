@@ -117,7 +117,7 @@ if (Meteor.isServer) {
           following_count: user.friends_count, image: user.profile_image_url_https.replace("_normal", ""),
           idStr: user.id_str };
       }).catch(err => {
-        console.log("error");
+        console.log("error et.twitter.account");
         console.log(err);
         throw new Meteor.Error("Error-Getting-user", err.toString());
       });
@@ -171,7 +171,7 @@ if (Meteor.isServer) {
         }
         return textos;
       }).catch(err => {
-        console.log("error");
+        console.log("error get.tweets");
         console.log(err);
         throw new Meteor.Error("Error-Getting-tweets", err.toString());
       });
@@ -193,7 +193,7 @@ if (Meteor.isServer) {
         console.log("se encontro friends");
         return idsFriends;
       }).catch(err => {
-        console.log("error");
+        console.log("error get.friends");
         console.log(err);
         throw new Meteor.Error("Error-Getting-friends", err.toString());
       });
@@ -215,7 +215,7 @@ if (Meteor.isServer) {
         console.log("se encontro followers");
         return idsFriends;
       }).catch(err => {
-        console.log("error");
+        console.log("error get.followers");
         console.log(err);
         throw new Meteor.Error("Error-Getting-Followers", err.toString());
       });
