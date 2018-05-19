@@ -112,7 +112,7 @@ class App extends Component {
   makeQueryCompare (event) {
     event.preventDefault();
     this.toggleModal();
-    console.log("intento compare");
+
     const typeCompare = this.state.typeCompare;
     const numberAccunts = Number(this.state.numberAccunts);
     const len = (typeCompare === "following" || typeCompare === "followers");
@@ -126,7 +126,6 @@ class App extends Component {
         } else {
           this.toggleModal();
           this.setState({ userCompare: result });
-          console.log(result);
         }
       });
     }
@@ -135,7 +134,7 @@ class App extends Component {
   makeQuery (event) {
     event.preventDefault();
     this.toggleModal();
-    console.log("intento");
+
     const account = this.state.account;
     const lenguage = this.state.lenguage;
     const len = (lenguage === "es" || lenguage === "en");
@@ -146,7 +145,6 @@ class App extends Component {
         } else {
           this.toggleModal();
           this.setState({ userData: result });
-          console.log(result);
         }
       });
     }
