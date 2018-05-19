@@ -24,12 +24,22 @@ if (Meteor.isServer) {
     return Following.find();
   });
 
-  let watsonClient = new Watson({
+  let watsonClient1 = new Watson({
     url: "https://gateway.watsonplatform.net/personality-insights/api",
-    username: process.env.WATSON_USERNAME,
-    password: process.env.WATSON_PASSWORD,
+    username: process.env.WATSON_USERNAME1,
+    password: process.env.WATSON_PASSWORD1,
     version: "2017-10-13"
   });
+
+  let watsonClient2 = new Watson({
+    url: "https://gateway.watsonplatform.net/personality-insights/api",
+    username: process.env.WATSON_USERNAME2,
+    password: process.env.WATSON_PASSWORD2,
+    version: "2017-10-13"
+  });
+
+  let clientesWatsonClient = [watsonClient1, watsonClient2];
+  let clientesWatsonClientrUso = [0, 0];
 
   let client = new Twitter({
     consumer_key: process.env.TWITTER_CONSUMER_KEY,
@@ -44,9 +54,45 @@ if (Meteor.isServer) {
     access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY2,
     access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET2
   });
+  let client3 = new Twitter({
+    consumer_key: process.env.TWITTER_CONSUMER_KEY3,
+    consumer_secret: process.env.TWITTER_CONSUMER_SECRET3,
+    access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY3,
+    access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET3
+  });
+  let client4 = new Twitter({
+    consumer_key: process.env.TWITTER_CONSUMER_KEY4,
+    consumer_secret: process.env.TWITTER_CONSUMER_SECRET4,
+    access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY4,
+    access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET4
+  });
+  let client5 = new Twitter({
+    consumer_key: process.env.TWITTER_CONSUMER_KEY5,
+    consumer_secret: process.env.TWITTER_CONSUMER_SECRET5,
+    access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY5,
+    access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET5
+  });
+  let client6 = new Twitter({
+    consumer_key: process.env.TWITTER_CONSUMER_KEY6,
+    consumer_secret: process.env.TWITTER_CONSUMER_SECRET6,
+    access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY6,
+    access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET6
+  });
+  let client7 = new Twitter({
+    consumer_key: process.env.TWITTER_CONSUMER_KEY7,
+    consumer_secret: process.env.TWITTER_CONSUMER_SECRET7,
+    access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY7,
+    access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET7
+  });
+  let client8 = new Twitter({
+    consumer_key: process.env.TWITTER_CONSUMER_KEY8,
+    consumer_secret: process.env.TWITTER_CONSUMER_SECRET8,
+    access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY8,
+    access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET8
+  });
 
-  let clientesTwitter = [client, client2];
-  let clientesTwitterUso = [0, 0];
+  let clientesTwitter = [client, client2, client3, client4, client5, client6, client7, client8];
+  let clientesTwitterUso = [0, 0, 0, 0, 0, 0, 0, 0];
 
   // This method will trigger the streamer
   Meteor.methods({
@@ -189,7 +235,8 @@ if (Meteor.isServer) {
         content_language: lenguage
       };
       let personality = new Promise((resolve, reject) => {
-        watsonClient.profile(profileParams, (err, { personality }) => {
+        let index = Meteor.call("darClienteWatson");
+        clientesWatsonClient[index].profile(profileParams, (err, { personality }) => {
           if (err) reject(err);
           resolve(personality);
         });
@@ -225,9 +272,23 @@ if (Meteor.isServer) {
           index = i;
         }
       }
-      console.log("registro uso");
+      console.log("Regisro uso twitter");
       clientesTwitterUso[index]++;
       console.log(clientesTwitterUso);
+      return index;
+    },
+    "darClienteWatson" () {
+      let min = 9999999999999999;
+      let index = -1;
+      for (let i = 0; i < clientesWatsonClientrUso.length; i++) {
+        if (clientesWatsonClientrUso[i] <= min) {
+          min = clientesWatsonClientrUso[i];
+          index = i;
+        }
+      }
+      console.log("registro uso whaton");
+      clientesWatsonClientrUso[index]++;
+      console.log(clientesWatsonClientrUso);
       return index;
     }
   }); //Meteor.methods

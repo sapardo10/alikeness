@@ -258,6 +258,11 @@ class App extends Component {
         <ModalHeader >Modal title</ModalHeader>
         <ModalBody>
         Wait a moment we are fetching data ...
+          <br/>
+          <br/>
+          <div className="centro">
+            <img src="/loading.svg" alt="Logo loadding"/>
+          </div>
         </ModalBody>
       </Modal>
     </div>);
