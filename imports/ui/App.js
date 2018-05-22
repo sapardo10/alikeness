@@ -1,3 +1,5 @@
+//Si bien esta muy bien estructurado el código Es mejor dividirlo un poco para lograr masyor claridad
+
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
