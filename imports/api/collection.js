@@ -1,3 +1,5 @@
+//Incluir rate limiter para evitar brecha de seguridad
+
 import { Meteor } from "meteor/meteor";
 import { Mongo } from "meteor/mongo";
 import { check } from "meteor/check";
